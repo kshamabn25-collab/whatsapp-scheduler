@@ -12,6 +12,7 @@
     "whatsapp-web.js": "^1.23.0"
   },
   "devDependencies": {
-    "jest": "^29.0.0"
+    "jest": "^29.0.0",
+    "qrcode": "^1.5.4"
   }
 }

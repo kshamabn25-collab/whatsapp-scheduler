@@ -1,0 +1,17 @@
+{
+  "name": "whatsapp-scheduler",
+  "version": "1.0.0",
+  "description": "Schedule WhatsApp group messages",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.23.0"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  }
+}

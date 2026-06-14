@@ -81,24 +81,28 @@ async function runScheduler(client) {
   const schedule = buildSchedule(config);
   console.log(`Scheduling ${schedule.length} message(s) to ${groups.length} group(s)`);
 
+  const now = Date.now();
+  const pending = schedule.filter(({ sendAt }) => sendAt.getTime() >= now);
+  const pastCount = schedule.length - pending.length;
+
+  if (pastCount > 0) {
+    console.log(`Skipping ${pastCount} message(s) whose scheduled time has already passed.`);
+  }
+
+  if (pending.length === 0) {
+    console.log('All done.');
+    return;
+  }
+
   let sent = 0;
-
-  for (const { message, sendAt } of schedule) {
+  for (const { message, sendAt } of pending) {
     const delay = sendAt.getTime() - Date.now();
-
-    if (delay < 0) {
-      console.log(`Skipping message (time already passed: ${sendAt.toISOString()})`);
-      sent++;
-      if (sent === schedule.length) console.log('All done.');
-      continue;
-    }
-
     setTimeout(async () => {
       for (const group of groups) {
         await sendWithRetry(group, message);
       }
       sent++;
-      if (sent === schedule.length) console.log('All done.');
+      if (sent === pending.length) console.log('All done.');
     }, delay);
   }
 }

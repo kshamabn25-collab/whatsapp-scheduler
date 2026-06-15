@@ -32,11 +32,14 @@ function buildSchedule(config) {
     .filter(({ sendAt }) => sendAt <= stopAt);
 }
 
-async function findGroups(client, name) {
+async function findGroups(client, nameOrId) {
   const chats = await client.getChats();
-  const groups = chats.filter((c) => c.isGroup && c.name === name);
+  const isId = nameOrId.includes('@g.us');
+  const groups = chats.filter((c) =>
+    c.isGroup && (isId ? c.id._serialized === nameOrId : c.name === nameOrId)
+  );
   if (groups.length === 0) {
-    throw new Error(`Group '${name}' not found — check spelling in config.json`);
+    throw new Error(`Group '${nameOrId}' not found — check spelling or ID in config.json`);
   }
   return groups;
 }

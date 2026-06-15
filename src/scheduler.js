@@ -32,13 +32,13 @@ function buildSchedule(config) {
     .filter(({ sendAt }) => sendAt <= stopAt);
 }
 
-async function findGroup(client, name) {
+async function findGroups(client, name) {
   const chats = await client.getChats();
-  const group = chats.find((c) => c.isGroup && c.name === name);
-  if (!group) {
+  const groups = chats.filter((c) => c.isGroup && c.name === name);
+  if (groups.length === 0) {
     throw new Error(`Group '${name}' not found — check spelling in config.json`);
   }
-  return group;
+  return groups;
 }
 
 async function sendWithRetry(group, message) {
@@ -66,8 +66,9 @@ async function runScheduler(client) {
   const groups = [];
   for (const name of config.groups) {
     try {
-      const group = await findGroup(client, name);
-      groups.push(group);
+      const matched = await findGroups(client, name);
+      groups.push(...matched);
+      console.log(`Found ${matched.length} group(s) named '${name}'`);
     } catch (err) {
       console.error(err.message);
     }
@@ -107,4 +108,4 @@ async function runScheduler(client) {
   }
 }
 
-module.exports = { validateConfig, buildSchedule, findGroup, runScheduler };
+module.exports = { validateConfig, buildSchedule, findGroups, runScheduler };
